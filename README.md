@@ -8,7 +8,7 @@ Community
 ======
   [Join us] (https://github.com/DemandCube/NeverwinterDP/blob/master/README.md#join-us-if) if you have [Grit] (http://www.ted.com/talks/angela_lee_duckworth_the_key_to_success_grit)
 
-- [Mailing List](https://groups.google.com/forum/#!forum/neverwinterdp)
+- [Developer Mailing List](https://groups.google.com/forum/#!forum/neverwinterdp)
 - IRC channel #neverwinterdp on irc.freenode.net
 - [Google Hangout] (http://www.google.com/hangouts/)
   - It's what commiters use to chat directly but have to connect with us first on the mailing list, then request an invite there.
@@ -37,17 +37,26 @@ It Supports:
 
 Neverwinter is the combination of three major open source project that leverage the best in open source. 
 
-1. Sparkngin (powered by Nginx)
-2. Kafka
-3. Scribengin
+1. [Sparkngin](https://github.com/DemandCube/Sparkngin) - (powered by Netty)
+2. [Queuengin](https://github.com/DemandCube/Queuengin) - (powered by Kafka or Kinesis)
+3. [Scribengin](https://github.com/DemandCube/Scribengin) - (powered by Yarn)
 
 Now that we have used enough buzz words.  Neverwinter reliably captures lots of data and saves it to hadoop and other systems.
 
-WHAT CAN NEVERWINTER DO?
+WHAT CAN NEVERWINTERDP DO?
 ========================
-Neverwinter allows data ingestion from any system that can emit http/rest (or zeromq) calls and then publish this data to a down stream database, including Hive, HBase, relational databases or even proprietary data stores. A single Neverwinter pipeline can combine data from multiple sources and deliver them to multiple sources, allowing for data to be delivered to multiple team or an entire organization.
+Neverwinter allows data ingestion from any system that can emit http/rest (or other protocols) calls and then publish this data to a down stream database, including Hive, HBase, relational databases or even proprietary data stores. A single Neverwinter pipeline can combine data from multiple sources and deliver them to multiple sources, allowing for data to be delivered to multiple team or an entire organization.
 
 Neverwinter is targeted at data and analytics engineering teams who expect response times ranging from sub-second to minutes. Neverwinter breaks the false choice between having  a batch or real-time system. Also the false choice between having a fast or maintainable system.
+
+WHO SHOULD USE NDP?
+========================
+* Gaming industry
+* Media Companies
+* Publisher
+* Telecom
+* Car Companies
+* Utilities
 
 Goals
 ---------
@@ -75,13 +84,13 @@ Components
 ----------
 
 1) Http/Rest/ZeroMQ Log Collection Endpoint - Sparkngin
-- [Sparkngin](https://github.com/DemandCube/Sparkngin)
+- [Sparkngin](https://github.com/DemandCube/Sparkngin) - powered by [Netty](http://netty.io/)
 
 2) Data Bus
-- [Kafka](http://kafka.apache.org/) or [Amazon Kinesis](http://aws.amazon.com/kinesis/) (Version 2)
+- [Queuengin](https://github.com/DemandCube/Queuengin) - powered by ([Kafka](http://kafka.apache.org/) or [Amazon Kinesis](http://aws.amazon.com/kinesis/))
 
 3) Data Pump/Transport
-- [Scribengin](https://github.com/DemandCube/Scribengin)
+- [Scribengin](https://github.com/DemandCube/Scribengin) - powered by   [Yarn](http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html)
 
 Related Projects
 ----------
@@ -336,6 +345,63 @@ $ patch -p0 < SPARKNGIN-1234-0.patch # When using git diff --no-prefix
   - Announce on the mailing list and request code review
 
 
+How to Build NeverwinterDP
+======
+```
+mkdir workspace
+cd workspace
+git clone https://github.com/DemandCube/NeverwinterDP-Commons
+git clone https://github.com/DemandCube/Queuengin
+git clone https://github.com/DemandCube/Sparkngin
+git clone https://github.com/DemandCube/Scribengin
+git clone https://github.com/DemandCube/Demandspike
+
+cd NeverwinterDP-Commons
+gradle clean build install
+
+cd ../Queuengin
+gradle clean build install
+
+cd ../Sparkngin
+gradle clean build install
+
+cd ../Scribengin
+gradle clean build install
+
+cd ../Demandspike
+gradle clean build install
+
+cd ..
+git clone https://github.com/DemandCube/NeverwinterDP
+cd NeverwinterDP
+gradle clean build realease
+
+cd  build/release/NeverwinterDP
+
+#To launch servers, you have two choices - single node server or multi node server
+./bin/local-single-jvm-server.sh 
+#or  
+./bin/local-multi-jvm-server.sh to launch the servers
+
+#At this point, we need to wait for the servers to come up
+#Make sure that there are 9 server are RUNNING before you run local-test.js by running this step
+./bin/shell.sh -c server ping
+
+#Run test script
+./bin/jsrun.sh  jscript/local-test.js
+
+#At this point you can point your browser to this url to see status
+http://localhost:8080/app/index.html
+
+
+#To kill the servers
+./bin/shell.sh -c server exit
+#or
+pkill -9 -f neverwinter
+
+```
+
+
 ## Github Help
   * [How push from your local repo to github](https://help.github.com/articles/pushing-to-a-remote#pushing-a-branch)
   * [How to send a pull request](https://help.github.com/articles/using-pull-requests)
@@ -352,8 +418,6 @@ If you can't actually move issues around let me (Steve) know.
 - "Working on documentation and automated tests" - are tickets your finishing the documentation and creating, unit, integration, configuration management/deployment (Ansible) installation tests.
 - "In documentation and automated test review" - review specifically of the documentation and test.  Follows the same process as code reviews.  A review should be requested on the mailinglist.
 - "Done" - The task should pass the automated integration test review from Jenkins
-
-
 
 * * *
 
@@ -601,4 +665,23 @@ Preferred Development Tools
 - [Vangrant] (http://www.vagrantup.com/)
 - [Virtualbox] (https://www.virtualbox.org/)
 - [Gradle] (http://www.gradle.org/)
+- [YourKit] (http://www.yourkit.com)
 
+Sponsors of NeverwinterDP Big Data Pipeline Open Source Project
+======
+![YourKit](sponsors/yourkit-logo.png?raw=true "YourKit Logo")
+
+* * *
+
+YourKit supports NeverwinterDP open source project with its full-featured Java Profiler.
+YourKit, LLC is the creator of innovative and intelligent tools for profiling
+Java and .NET applications. Take a look at YourKit's leading software products:
+[YourKit Java Profiler] (http://www.yourkit.com/java/profiler/index.jsp) and
+[YourKit .NET Profiler] (http://www.yourkit.com/.net/profiler/index.jsp).
+
+
+* * *
+- YOUR COMPANY LOGO
+
+* * * 
+About Your Company
